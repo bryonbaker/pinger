@@ -13,7 +13,7 @@
 # limitations under the License.
 
 # Use the git tag to set the image version etc
-#VERSION := $(shell git describe --tags --dirty=-modified --always)
+VERSION := $(shell git describe --tags --dirty=-modified --always)
 
 clean:
 	rm bin/pinger
@@ -22,8 +22,8 @@ build:
 	go build -o bin/pinger cmd/main.go
 
 package: clean build
-	echo "Tsk tsk! \"make test\" is not implemented yet."
-#	podman build . -t quay.io/brbaker/market-pricing:${VERSION}
+	podman build . -t pinger:${VERSION}
+	podman tag pinger:${VERSION} pinger:latest
 run:
 	go run cmd/main.go
 
