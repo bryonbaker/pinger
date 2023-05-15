@@ -22,8 +22,10 @@ build:
 	go build -o bin/pinger cmd/main.go
 
 package: clean build
-	podman build . -t pinger:${VERSION}
+	podman build -t pinger:${VERSION} .
 	podman tag pinger:${VERSION} pinger:latest
+	podman tag pinger:${VERSION} quay.io/bryonbaker/pinger:${VERSION}
+	podman tag pinger:${VERSION} quay.io/bryonbaker/pinger:latest
 run:
 	go run cmd/main.go
 
