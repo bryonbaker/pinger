@@ -1,0 +1,46 @@
+apiVersion: v1
+kind: ConfigMap
+metadata:
+  name: pinger-config
+data:
+  SITE: site-b
+  PORT: "50052"
+  SERVER: site-a:50051
+---
+apiVersion: apps/v1
+kind: Deployment
+metadata:
+  labels:
+    app: pinger
+  name: pinger
+spec:
+  replicas: 1
+  selector:
+    matchLabels:
+      app: pinger
+  template:
+    metadata:
+      labels:
+        app: pinger
+    spec:
+      containers:
+      - name: pinger
+        image: quay.io/bryonbaker/pinger:latest
+        imagePullPolicy: Always
+        envFrom:
+        - configMapRef:
+            name: pinger-config
+        command: ["/app/pinger"]
+        args: ["--site-name", "site-b", "--remote-url", "site-a.site-a.svc.cluster.local:50051", "--listen-port", "50052"]
+---
+apiVersion: v1
+kind: Service
+metadata:
+  name: site-b
+spec:
+  selector:
+    app: pinger
+  ports:
+    - protocol: TCP
+      port: 50052
+      targetPort: 50052
